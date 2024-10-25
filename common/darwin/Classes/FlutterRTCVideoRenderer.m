@@ -45,12 +45,6 @@
   return self;
 }
 
-- (void)dealloc {
-  if (_pixelBufferRef) {
-    CVBufferRelease(_pixelBufferRef);
-  }
-}
-
 - (CVPixelBufferRef)copyPixelBuffer {
   if (_pixelBufferRef != nil) {
     CVBufferRetain(_pixelBufferRef);
@@ -61,6 +55,10 @@
 
 - (void)dispose {
   [_registry unregisterTexture:_textureId];
+  if (_pixelBufferRef) {
+    CVBufferRelease(_pixelBufferRef);
+    _pixelBufferRef = nil;
+  }
 }
 
 - (void)setVideoTrack:(RTCVideoTrack*)videoTrack {
@@ -108,7 +106,7 @@
                       dstV:(uint8_t*)buffer.dataV
                 dstStrideV:buffer.strideV
                      width:src.width
-                     width:src.height
+                    height:src.height
                       mode:rotation];
 
   return buffer;
@@ -140,7 +138,7 @@
                        dstUV:dstUV
                  dstStrideUV:(int)dstUVStride
                        width:i420Buffer.width
-                       width:i420Buffer.height];
+                      height:i420Buffer.height];
 
   } else {
     uint8_t* dst = CVPixelBufferGetBaseAddress(outputPixelBuffer);
